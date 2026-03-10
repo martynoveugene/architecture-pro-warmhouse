@@ -1,0 +1,44 @@
+@startuml
+title WarmHouse Telemetry Service Diagram
+
+top to bottom direction
+
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+Container(APIGateway, "API Gateway", "REST", "Gateway routing calls")
+
+Container_Boundary(TelemetryMicroservice, "Telemetry Microservice") {
+    Container(TelemetryTimer, "Telemetry Timer", "Go", "by timer bypass all sensors and retrieve telemetry")
+
+    Component(TelemetryRestController, "RestController", "Go", "REST API to get telemetry")
+    Component(TelemetrySearch, "Telemetry Search", "Go", "search engine to get telemetry")
+    Component(InfoListener, "Info Listener", "Consumer", "Listens to the queue for info changes")
+
+    Component(SensorRegistry, "Sensor Registry", "", "Business logic for save/edit/delete/get sensors")
+
+    ContainerDb(TelemetryDatabase, "TelemetryDatabase", "PostgreSQL ?", "Stores sensors telemetry")
+}
+
+ContainerDb(queueSate, "Queue sensor state changed messages", "RabbitMQ", "")
+ContainerDb(queueInfo, "Queue sensor info changed messages", "RabbitMQ", "")
+
+System_Ext(sensor, "Set of Sensors", "External scope of the physical devices / External API")
+
+
+
+Rel(APIGateway, TelemetryRestController, "/telemetry/*")
+Rel(queueInfo, InfoListener, "consumes sensor info data")
+
+Rel(InfoListener, SensorRegistry, "updates sensor info")
+Rel(TelemetryTimer, SensorRegistry, "reads sensor info")
+Rel(SensorRegistry, TelemetryDatabase, "reads/writes sensor info")
+Rel(TelemetryRestController, TelemetrySearch, "gets telemetry")
+Rel(TelemetrySearch, TelemetryDatabase, "searches telemetry")
+
+Rel(TelemetryTimer, sensor,"runs commands")
+
+Rel(TelemetryTimer, TelemetryDatabase,"writes telemetry results")
+Rel(TelemetryTimer, queueSate, "publishes sensor change state messages", "AMQP")
+
+
+@enduml

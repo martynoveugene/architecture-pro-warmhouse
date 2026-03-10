@@ -1,0 +1,60 @@
+@startuml
+title WarmHouse Container Diagram
+
+top to bottom direction
+
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+Person(user, "User", "A user of the WarmHouse system")
+System(WarmHouseSystem, "WarmHouse System", "System managing sensors, scenarios")
+
+Container_Boundary(WarmHouseSystem, "WarmHouse System") {
+    Container(WebApp, "Web Application", "JavaScript", "Handles user interactions")
+    Container(APIGateway, "API Gateway", "REST", "Gateway routing calls")
+
+    Container_Boundary(SensorMicroservice, "Sensor Microservice") {
+        Container(APISensorService, "API Sensor Service", "Go", "Processes sensor calls")
+        ContainerDb(SensorDatabase, "SensorDatabase", "PostgreSQL", "Stores user/house data, sensors info")
+    }
+    Container_Boundary(ScenarioMicroservice, "Scenario Microservice") {
+        Container(ScenarioProcessor, "Scenario Service", "Timers / Go", "Watches and Triggers Scenarios")
+        ContainerDb(ScenarioDatabase, "ScenarioDatabase", "PostgreSQL", "Stores sensor scenarios")
+    }
+    Container_Boundary(TelemetryMicroservice, "Telemetry Microservice") {
+        Container(TelemetryService, "Telemetry Service", "Go", "Processes telemetry calls")
+        ContainerDb(TelemetryDatabase, "TelemetryDatabase", "PostgreSQL ?", "Stores sensors telemetry")
+    }
+
+    ContainerDb(queueSate, "Queue sensor state changed messages", "RabbitMQ", "")
+    ContainerDb(queueInfo, "Queue sensor info changed messages", "RabbitMQ", "")
+}
+
+System_Ext(sensor, "Set of Sensors", "External scope of the physical devices / External API")
+
+
+
+Rel(user, WebApp, "Uses the system")
+
+Rel(WebApp,APIGateway,"Invokes API requests")
+
+Rel(APIGateway, APISensorService, "/*")
+Rel(APIGateway, ScenarioProcessor, "/scenario/*")
+Rel(APIGateway, TelemetryService,"/telemetry/*")
+
+Rel(APISensorService,sensor,"Runs commands")
+Rel(APISensorService,SensorDatabase,"Reads/Writes user info")
+Rel(APISensorService,queueInfo,"Publishes sensor info data")
+
+Rel(queueInfo,ScenarioProcessor,"Consumes sensor info data")
+Rel(queueInfo,TelemetryService,"Consumes sensor info data")
+
+Rel(ScenarioProcessor,ScenarioDatabase,"Stores/retrieves Scenarios")
+Rel(ScenarioProcessor,sensor,"Runs commands")
+
+Rel(TelemetryService,sensor,"Runs commands")
+Rel(TelemetryService,TelemetryDatabase,"Writes telemetry command results")
+Rel(TelemetryService, queueSate, "Publishes sensor change state messages", "AMQP")
+
+Rel(queueSate, ScenarioProcessor, "Consumes sensor change state messages", "AMQP")
+
+@enduml
