@@ -1,0 +1,124 @@
+openapi: 3.0.3
+info:
+  title: Scenario Microservice API
+  version: 1.0.0
+  description: API для управления сценариями
+
+servers:
+  - url: http://localhost:8080/api/v1
+
+paths:
+  /scenario/all:
+    get:
+      summary: Получить список сценариев пользователя
+      responses:
+        '200':
+          description: Успешный ответ
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Scenario'
+
+  /scenario:
+    post:
+      summary: Создать новый сценарий
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Scenario'
+      responses:
+        '200':
+          description: Сценарий успешно создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scenario'
+
+  /scenario/{scenarioId}:
+    get:
+      summary: Получить сценарий
+      parameters:
+        - name: scenarioId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Успешный ответ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scenario'
+
+    post:
+      summary: отредактировать существующий сценарий
+      parameters:
+        - name: scenarioId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Scenario'
+      responses:
+        '200':
+          description: Сценарий успешно отредактирован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scenario'
+
+    patch:
+      summary: активировать или выключить существующий сценарий
+      parameters:
+       - name: status
+         in: query
+         required: true
+         schema:
+           type: string
+           enum: [active, inactive]
+         description: Новый статус устройства
+      responses:
+        '200':
+          description: Сценарий успешно отредактирован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scenario'
+
+    delete:
+      summary: Удалить сценарий
+      parameters:
+        - name: scenarioId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Сценарий успешно удален
+
+
+components:
+  schemas:
+    Scenario:
+      type: object
+      properties:
+        id:
+          type: integer
+        sensorId:
+          type: integer
+        script:
+          type: string
+        status:
+          type: string
+          enum: [active, inactive]
