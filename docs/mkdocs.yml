@@ -1,0 +1,12 @@
+site_name: WarmHouse Documentation
+theme: readthedocs
+markdown_extensions:
+  - md_in_html
+#  - plantuml_markdown
+plugins:
+  - search
+  - plantuml:
+#      render: local
+#      puml_binary: "java -jar lib/plantuml-1.2026.2.jar"
+      puml_url: https://www.plantuml.com/plantuml/
+#      output_format: svg
