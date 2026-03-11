@@ -13,11 +13,12 @@ For full documentation visit [mkdocs.org](https://www.mkdocs.org).
 
     mkdocs.yml    # The configuration file.
     context.md
-    architecture/
-        Warmhouse_Context.md # context diagram
-        Warmhouse_Container.md # container diagram
+    schemas/
+        Warmhouse_Context.md
+        Warmhouse_Container.md
         Warmhouse_Component_Sensor.md
         Warmhouse_Component_Scenario.md
         Warmhouse_Component_Telemetry.md
         Warmhouse_ER.md
+        Warmhouse_Code.md
     index.md  # The documentation homepage.

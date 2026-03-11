@@ -1,0 +1,56 @@
+```puml
+@startuml
+title WarmHouse Temperature API Code Diagram
+
+top to bottom direction
+
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+package "com.warmhouse.controller" {
+    class TemperatureController {
+        - temperatureService: TemperatureService
+        + TemperatureController(service: TemperatureService)
+        + getBySensorId(sensorId: String): ResponseEntity<TelemetryLog>
+        + getByLocation(location: String): ResponseEntity<TelemetryLog>
+    }
+}
+
+package "com.warmhouse.service" {
+    class TemperatureService {
+        - repository: TemperatureRepository
+        + getBySenorId(sensorId: String): TelemetryLog
+        + getByLocation(location: String): TelemetryLog
+    }
+}
+
+package "com.warmhouse.repository" {
+    interface TemperatureRepository {
+        + findBySensorId(id: String): Optional<TelemetryLog>
+        + findByLocation(loc: String): Optional<TelemetryLog>
+    }
+}
+
+package "com.warmhouse.model" {
+    class TelemetryLog {
+        - id: Long
+        - sensorId: String
+        - value: Float
+        - unit: String
+        - location: String
+        - sensorType: String
+        - status: String
+        - timestamp: LocalDateTime
+        - description: String
+        + getters/setters()
+    }
+}
+
+
+TemperatureController o-- TemperatureService : "uses"
+TemperatureService o-- TemperatureRepository : "uses"
+TemperatureService ..> TelemetryLog : "returns"
+TemperatureController ..> TelemetryLog : "wraps in ResponseEntity"
+TemperatureRepository ..> TelemetryLog : "manages"
+
+@enduml
+```

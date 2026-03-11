@@ -81,12 +81,6 @@ house ||--o{ user_sensor : "own"
 scenario_sensor ||--o{ scenario : "own"
 telemetry_sensor ||--o{ telemetry_log : "own"
 
-' legend
-legend right
-  |<back:LightBlue>   </back>| Device DB |
-  |<back:LightGreen>   </back>| Heating DB |
-  |<back:LightYellow>   </back>| Telemetry DB |
-endlegend
 
 note right of user_sensor
   **type:**
