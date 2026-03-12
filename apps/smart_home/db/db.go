@@ -5,10 +5,15 @@ import (
 	"errors"
 	"fmt"
 	"time"
+	"os"
+	"encoding/json"
+	"strconv"
 
 	"smarthome/models"
+	"smarthome/kafkaClient"
 
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/segmentio/kafka-go"
 )
 
 // DB represents the database connection
@@ -137,6 +142,27 @@ func (db *DB) CreateSensor(ctx context.Context, s models.SensorCreate) (models.S
 		return models.Sensor{}, fmt.Errorf("error creating sensor: %w", err)
 	}
 
+	// send to kafka
+	if os.Getenv("MVP") == "1" {
+	    var sensorEvent models.SensorEvent
+	    sensorEvent.Event = "SensorCreated"
+	    sensorEvent.Sensor = sensor
+		payload, err := json.Marshal(sensorEvent)
+		if err != nil {
+			fmt.Printf("failed to marshal sensor: %v\n", err)
+		} else {
+			err = kafkaClient.GetWriter().WriteMessages(ctx, kafka.Message{
+				Key:   []byte(strconv.Itoa(sensor.ID)),
+				Value: payload,
+			})
+			if err != nil {
+				fmt.Printf("failed to write to kafka: %v\n", err)
+			} else {
+				fmt.Printf("the message has been sent to the queue: %v\n", payload)
+			}
+		}
+	}
+
 	return sensor, nil
 }
 
@@ -223,6 +249,29 @@ func (db *DB) DeleteSensor(ctx context.Context, id int) error {
 
 	if result.RowsAffected() == 0 {
 		return errors.New("sensor not found")
+	}
+
+	// send to kafka
+	if os.Getenv("MVP") == "1" {
+	    var sensor models.Sensor
+	    sensor.ID = id
+	    var sensorEvent models.SensorEvent
+	    sensorEvent.Event = "SensorDeleted"
+	    sensorEvent.Sensor = sensor
+		payload, err := json.Marshal(sensorEvent)
+		if err != nil {
+			fmt.Printf("failed to marshal sensor: %v\n", err)
+		} else {
+			err = kafkaClient.GetWriter().WriteMessages(ctx, kafka.Message{
+				Key:   []byte(strconv.Itoa(sensor.ID)),
+				Value: payload,
+			})
+			if err != nil {
+				fmt.Printf("failed to write to kafka: %v\n", err)
+			} else {
+				fmt.Printf("the message has been sent to the queue: %v\n", payload)
+			}
+		}
 	}
 
 	return nil
