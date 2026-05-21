@@ -1,0 +1,147 @@
+openapi: 3.0.3
+info:
+  title: Sensor Microservice API
+  version: 1.0.0
+  description: API для управления устройствами и выполнения команд
+
+servers:
+  - url: http://localhost:8080/api/v1
+
+paths:
+  /sensor/all:
+    get:
+      summary: Получить список устройств пользователя
+      responses:
+        '200':
+          description: Успешный ответ
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Sensor'
+
+  /sensor:
+    post:
+      summary: Создать новое устройство
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Sensor'
+      responses:
+        '200':
+          description: Устройство успешно создано
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Sensor'
+
+  /sensor/{sensorId}:
+    get:
+      summary: Получить информацию об устройстве
+      parameters:
+        - name: sensorId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Успешный ответ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Sensor'
+
+    post:
+      summary: отредактировать существующее устройство
+      parameters:
+        - name: sensorId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Sensor'
+      responses:
+        '200':
+          description: Устройство успешно отредактировано
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Sensor'
+
+    delete:
+      summary: Удалить устройство
+      parameters:
+        - name: sensorId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Устройство успешно удалено
+
+  /sensor/{sensorId}/command:
+    post:
+      summary: передать команду устройству
+      parameters:
+        - name: sensorId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Command'
+      responses:
+        '200':
+          description: Команда передана на устройство для исполнения
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Sensor'
+
+components:
+  schemas:
+    Sensor:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        type:
+          type: string
+          enum: [temperature_sensor, temperature_controller]
+        location:
+          type: string
+        status:
+          type: string
+          enum: [active, inactive, unavailable]
+        houseId:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+
+    Command:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          enum: [switch_on, switch_off, set_temperature]
+        value:
+          type: integer

@@ -1,0 +1,46 @@
+@startuml
+title WarmHouse API Sensor Service Diagram
+
+top to bottom direction
+
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+Container(APIGateway, "API Gateway", "REST", "Gateway routing calls")
+
+Container_Boundary(SensorMicroservice, "Sensor Microservice") {
+
+    Component(SensorController, "Sensor Controller", "Manages sensor basic info")
+    Component(UserController, "User Controller", "Manages user profiles")
+    Component(CommandController, "CommandController", "Handles commands")
+
+    Component(InfoBusinessLayer, "Info Business Layer", "Business logic for user/house/scenarios data")
+    Component(CommandBusinessLayer, "Command Business Layer", "Business logic for commands")
+
+    Component(PersistentLayer, "Persistent Layer", "CRUD for data")
+
+    ContainerDb(SensorDatabase, "SensorDatabase", "PostgreSQL", "Stores user/house data, sensors info")
+}
+
+ContainerDb(queueInfo, "Queue sensor info changed messages", "RabbitMQ", "")
+
+System_Ext(sensor, "Set of Sensors", "External scope of the physical devices / External API")
+
+
+Rel(APIGateway, SensorController, "/sensor/*")
+Rel(APIGateway, UserController, "/user/*")
+Rel(APIGateway, CommandController, "/sensor/*/command")
+
+Rel(InfoBusinessLayer, queueInfo, "Publishes sensor info data")
+
+
+Rel(SensorController, InfoBusinessLayer,"Calls business logic")
+Rel(UserController, InfoBusinessLayer,"Calls business logic")
+Rel(CommandController, CommandBusinessLayer,"Calls business logic")
+
+Rel(CommandBusinessLayer, sensor, "Runs commands")
+Rel(CommandBusinessLayer, InfoBusinessLayer, "gets sensor info")
+
+Rel(InfoBusinessLayer, PersistentLayer,"Reads/Writes data")
+Rel(PersistentLayer, SensorDatabase,"Reads/Writes user info")
+
+@enduml

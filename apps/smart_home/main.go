@@ -12,6 +12,7 @@ import (
 	"smarthome/db"
 	"smarthome/handlers"
 	"smarthome/services"
+	"smarthome/kafkaClient"
 
 	"github.com/gin-gonic/gin"
 )
@@ -24,6 +25,13 @@ func main() {
 		log.Fatalf("Unable to connect to database: %v\n", err)
 	}
 	defer database.Close()
+    defer func() {
+        if err := kafkaClient.CloseWriter(); err != nil {
+            log.Printf("Error closing Kafka writer: %v", err)
+        } else {
+            log.Println("Kafka writer closed successfully")
+        }
+    }()
 
 	log.Println("Connected to database successfully")
 

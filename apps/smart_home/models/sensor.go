@@ -24,6 +24,11 @@ type Sensor struct {
 	CreatedAt   time.Time  `json:"created_at"`
 }
 
+type SensorEvent struct {
+    Sensor  Sensor          `json:"sensor"`
+    Event   string          `json:"event"`
+}
+
 // SensorCreate represents the data needed to create a new sensor
 type SensorCreate struct {
 	Name     string     `json:"name" binding:"required"`

@@ -1,0 +1,143 @@
+@startuml Warmhouse_ER
+
+title Warmhouse System ER diagram
+
+package "Sensor Database" {
+    entity "User" as user <<SensorDB>> {
+        * id : SERIAL <<PK>>
+        --
+        * login : VARCHAR(255)
+        * created_at : TIMESTAMPZ
+    }
+
+    entity "House" as house <<SensorDB>> {
+        * id : SERIAL <<PK>>
+        --
+        * user_id: INTEGER
+        * name : VARCHAR(255)
+        * created_at : TIMESTAMPZ
+    }
+
+    entity "Sensor" as user_sensor <<SensorDB>> {
+        * id : SERIAL <<PK>>
+        --
+        * name : VARCHAR(100)
+        * type : VARCHAR(50)
+        * location : VARCHAR(100)
+        * status : VARCHAR(50)
+        * house_id : INTEGER
+        * created_at : TIMESTAMPZ
+    }
+
+
+}
+
+package "Scenario Database" {
+
+    entity "ScenarioSensor" as scenario_sensor <<ScenarioDB>> {
+        * id : SERIAL <<PK>>
+        --
+        * type : VARCHAR(50)
+        * status : VARCHAR(50)
+    }
+
+    entity "Scenario" as scenario <<ScenarioDB>> {
+        * id : SERIAL <<PK>>
+        --
+        * sensor_id : INTEGER <<FK>>
+        * script : TEXT
+        * status : VARCHAR(50)
+        * result : VARCHAR(50)
+        * created_at : TIMESTAMPZ
+        executed_at : TIMESTAMPZ
+    }
+}
+
+package "Telemetry Database" {
+
+    entity "TelemetrySensor" as telemetry_sensor <<TelemetryDB>> {
+        * id : SERIAL <<PK>>
+        --
+        * type : VARCHAR(50)
+        * status : VARCHAR(50)
+        * location : VARCHAR(100)
+    }
+
+    entity "TelemetryLog" as telemetry_log <<TelemetryDB>> {
+        * id : SERIAL <<PK>>
+        --
+        * sensor_id : INTEGER <<FK>>
+        * status : VARCHAR(20) DEFAULT 'inactive'
+          value : FLOAT DEFAULT 0
+        * unit : VARCHAR(20)
+        * measurement : VARCHAR(50)
+        * created_at : TIMESTAMPZ DEFAULT NOW()
+    }
+}
+
+' entity links
+user ||--o{ house : "own"
+house ||--o{ user_sensor : "own"
+scenario_sensor ||--o{ scenario : "own"
+telemetry_sensor ||--o{ telemetry_log : "own"
+
+
+note right of user_sensor
+  **type:**
+  - temperature_sensor
+  - temperature_controller
+
+  **status:**
+  - active
+  - inactive
+  - unavailable
+end note
+
+note right of telemetry_sensor
+  **type:**
+  - temperature_sensor
+  - temperature_controller
+
+  **status:**
+  - active
+  - inactive
+  - unavailable
+end note
+
+note right of telemetry_log
+  **unit:**
+  - celsius
+  - mmhg
+  - pascal
+  - percent
+
+  **measurement:**
+  - temperature
+  - humidity
+  - battery_level
+end note
+
+
+note right of scenario_sensor
+  **type:**
+  - temperature_sensor
+  - temperature_controller
+
+  **status:**
+  - active
+  - inactive
+  - unavailable
+end note
+
+note right of scenario
+  **status:**
+  - active
+  - inactive
+
+  **result:**
+  - ok
+  - fail
+end note
+
+
+@enduml
