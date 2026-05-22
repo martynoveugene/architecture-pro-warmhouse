@@ -70,7 +70,8 @@
 
 Диаграмма контекста в модели C4:
 
-- [Диаграмма контекста](schemas/Warmhouse_Context.puml)
+- [Диаграмма контекста puml](schemas/Warmhouse_Context.puml)
+- [Диаграмма контекста png](schemas/Warmhouse_Context.png)
 
 # Задание 2. Проектирование микросервисной архитектуры
 
@@ -78,24 +79,30 @@
 
 **Диаграмма контейнеров (Containers)**
 
- - [Диаграмма контейнеров](schemas/Warmhouse_Container.puml)
+ - [Диаграмма контейнеров puml](schemas/Warmhouse_Container.puml)
+ - [Диаграмма контейнеров png](schemas/Warmhouse_Container.png)
 
 **Диаграмма компонентов (Components)**
 
 Диаграммы для каждого из выделенных микросервисов.
- - [Микросервис Сенсоров](schemas/Warmhouse_Component_Sensor.puml)
- - [Микросервис Сценариев](schemas/Warmhouse_Component_Scenario.puml)
- - [Микросервис Телеметрии](schemas/Warmhouse_Component_Telemetry.puml)
+ - [Микросервис Сенсоров puml](schemas/Warmhouse_Component_Sensor.puml)
+ - [Микросервис Сенсоров png](schemas/Warmhouse_Component_Sensor.png)
+ - [Микросервис Сценариев puml](schemas/Warmhouse_Component_Scenario.puml)
+ - [Микросервис Сценариев png](schemas/Warmhouse_Component_Scenario.png)
+ - [Микросервис Телеметрии puml](schemas/Warmhouse_Component_Telemetry.puml)
+ - [Микросервис Телеметрии png](schemas/Warmhouse_Component_Telemetry.png)
 
 **Диаграмма кода (Code)**
 
-- [Диаграмма кода для Temperature API](schemas/Warmhouse_Code.puml)
+- [Диаграмма кода для Temperature API puml](schemas/Warmhouse_Code.puml)
+- [Диаграмма кода для Temperature API png](schemas/Warmhouse_Code.png)
 
 # Задание 3. Разработка ER-диаграммы
 
 ER-диаграмма отражающая ключевые сущности системы, их атрибуты и тип связей между ними.
 
-- [ER-диаграмма](schemas/Warmhouse_ER.puml)
+- [ER-диаграмма puml](schemas/Warmhouse_ER.puml)
+- [ER-диаграмма png](schemas/Warmhouse_ER.png)
 
 # Задание 4. Создание и документирование API
 
